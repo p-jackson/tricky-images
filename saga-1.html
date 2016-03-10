@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+   <head>
+      <title>Tricky Images with Saga</title>
+      <link rel="stylesheet" type="text/css" href="src/style.css">
+      <script src="https://npmcdn.com/redux@3.3.1/dist/redux.min.js"></script>
+      <script src="https://npmcdn.com/redux-saga@0.9.1/dist/redux-saga.min.js"></script>
+   </head>
+   <body>
+      <div id="image" class="row imageContainer isEmpty"></div>
+      <div id="uploadingMessage" class="row idHidden">
+         <span class="spinner isSpinning"></span>
+         <span class="spinnerText">Uploading</span>
+      </div>
+      <script src="src/shared.js"></script>
+      <script>
+
+      function* uploadSaga() {
+         yield* takeEvery("DROP_IMAGE", uploadImage);
+      }
+
+      function* uploadImage(action) {
+         try {
+            yield put({ type: "START_UPLOADING" });
+            const dataUrl = yield call(readAsDataURL, action.file);
+            yield put({ type: "SET_IMAGE", url: dataUrl });
+         }
+         catch (e) {
+            yield put({ type: "REMOVE_IMAGE" });
+         }
+         finally {
+            yield put({ type: "STOP_UPLOADING" });
+         }
+      }
+
+      const store = createStore(reducer, applyMiddleware(createSagaMiddleware(uploadSaga)));
+
+      setupDragging(store.dispatch);
+
+      store.subscribe(() => renderAll(store.getState()));
+      renderAll(store.getState());
+
+      </script>
+   </body>
+</html>

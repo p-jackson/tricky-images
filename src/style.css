@@ -1,0 +1,110 @@
+* {
+   margin: 0;
+   padding: 0;
+}
+
+body {
+   font-family: sans-serif;
+   color: #555;
+   position: absolute;
+   width: 100%;
+   height: 100%;
+}
+
+.row {
+   width: 400px;
+   margin-left: auto;
+   margin-right: auto;
+   display: flex;
+   flex-direction: row;
+}
+
+.isHidden {
+   display: none;
+}
+
+.imageContainer {
+   margin-top: 100px;
+   margin-bottom: 0.5em;
+   height: 400px;
+   position: relative;
+
+   background-repeat: no-repeat;
+   background-position: center center;
+   background-attachment: fixed;
+   background-size: cover;
+}
+
+.imageContainer.isEmpty {
+   border: 6px dashed #555;
+   border-radius: 20px;
+}
+
+.imageContainer.isEmpty::before {
+   content: "Drop image here";
+   font-size: 2rem;
+   text-transform: uppercase;
+   position: absolute;
+   text-align: center;
+   width: 100%;
+   margin-top: calc(50% - 0.5em);
+   transition: font-size 300ms ease;
+}
+
+.imageContainer.isEmpty.isImageHovering::before {
+   font-size: 2.3rem;
+}
+
+@keyframes spin {
+  0% {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  50% {
+    -ms-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+  100% {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+   flex: 0 20px;
+   height: 20px;
+   border-radius: 50%;
+   margin-right: 0.3em;
+   position: relative;
+   box-sizing: border-box;
+}
+
+.spinner.isSpinning {
+   border: 3px solid #555;
+   animation: spin 1s linear infinite;
+}
+
+.spinner.isSpinning::before {
+   content: "";
+   position: absolute;
+   background: #fff;
+   width: 10px;
+   height: 10px;
+   top: 7px;
+   left: 7px;
+}
+
+.spinnerText {
+   flex: 1;
+   font-weight: bold;
+   line-height: 20px;
+}
