@@ -3,7 +3,9 @@
 const createStore = Redux.createStore;
 const applyMiddleware = Redux.applyMiddleware;
 const takeEvery = ReduxSaga.takeEvery;
+const takeLatest = ReduxSaga.takeLatest;
 const createSagaMiddleware = ReduxSaga.default;
+const isCancelError = ReduxSaga.isCancelError;
 const put = ReduxSaga.effects.put;
 const call = ReduxSaga.effects.call;
 
@@ -33,6 +35,7 @@ function renderAll(props) {
    }
    else {
       image.classList.add("isEmpty");
+      image.style.backgroundImage = null;
    }
 }
 
@@ -87,6 +90,8 @@ function reducer(state, action) {
          return Object.assign({}, state, { isUploading: true });
       case "STOP_UPLOADING":
          return Object.assign({}, state, { isUploading: false });
+      case "CANCEL_UPLOADING":
+         return Object.assign({}, state, { isUploading: false, imageUrl: null });
       case "SET_IMAGE":
          return Object.assign({}, state, { imageUrl: action.url });
       case "REMOVE_IMAGE":

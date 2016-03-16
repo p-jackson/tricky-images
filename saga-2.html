@@ -17,7 +17,7 @@
       <script>
 
       function* uploadSaga() {
-         yield* takeEvery("DROP_IMAGE", uploadImage);
+         yield* takeLatest("DROP_IMAGE", uploadImage);
       }
 
       function* uploadImage(action) {
@@ -44,6 +44,8 @@
             yield put({ type: "STOP_UPLOADING" });
          }
          catch (e) {
+            if (!isCancelError(e))
+               console.error(e.stack);
             yield put({ type: "CANCEL_UPLOADING" });
          }
       }
