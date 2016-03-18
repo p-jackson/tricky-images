@@ -16,6 +16,11 @@
       <script src="src/shared.js"></script>
       <script>
 
+      function onDropEvent(ev) {
+         ev.preventDefault();
+         store.dispatch({ type: "DROP_IMAGE", file: ev.dataTransfer.files[0] })
+      }
+
       function* uploadSaga() {
          yield* takeEvery("DROP_IMAGE", uploadImage);
       }
@@ -37,20 +42,21 @@
                yield put({ type: "SET_IMAGE", url });
             }
             else {
-               console.error(`Server error: ${response.status} ${response.statusText}`);
+               console.error(`Error: ${response.status} ${response.statusText}`);
                yield put({ type: "REMOVE_IMAGE" });
             }
 
             yield put({ type: "STOP_UPLOADING" });
          }
          catch (e) {
+            console.error(e.stack);
             yield put({ type: "CANCEL_UPLOADING" });
          }
       }
 
       const store = createStore(reducer, applyMiddleware(createSagaMiddleware(uploadSaga)));
 
-      setupDragging(store.dispatch);
+      setupDragging(store.dispatch, onDropEvent);
 
       store.subscribe(() => renderAll(store.getState()));
       renderAll(store.getState());

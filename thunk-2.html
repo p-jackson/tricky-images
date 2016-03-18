@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+   <head>
+      <title>Tricky Images with Saga</title>
+      <link rel="stylesheet" type="text/css" href="src/style.css">
+      <script src="https://npmcdn.com/redux@3.3.1/dist/redux.min.js"></script>
+   </head>
+   <body>
+      <div id="image" class="row imageContainer isEmpty"></div>
+      <div id="uploadingMessage" class="row idHidden">
+         <span class="spinner isSpinning"></span>
+         <span class="spinnerText">Uploading</span>
+      </div>
+      <script src="src/mock-server.js"></script>
+      <script src="src/shared.js"></script>
+      <script>
+
+      let cancelUpload = null;
+      function onDropEvent(ev) {
+         ev.preventDefault();
+         const file = ev.dataTransfer.files[0];
+
+         store.dispatch(dispatch => {
+            if (cancelUpload) {
+               dispatch({ type: "CANCEL_UPLOADING" });
+               cancelUpload();
+            }
+            cancelUpload = uploadSequence(dispatch, file);
+         });
+      }
+
+      function uploadSequence(dispatch, file) {
+         let cancelled = false;
+
+         dispatch({ type: "START_UPLOADING" });
+
+         readAsDataURL(file)
+            .then(dataUrl => {
+               if (cancelled)
+                  return;
+
+               dispatch({ type: "SET_IMAGE", url: dataUrl });
+
+               const body = new FormData();
+               body.append("file", file);
+               return fetch("/images", { method: "POST", body });
+            })
+            .then(response => {
+               if (cancelled)
+                  return;
+
+               if (response.status === 201) {
+                  const url = response.headers.get("Location");
+                  dispatch({ type: "SET_IMAGE", url });
+               }
+               else {
+                  console.error(`Error: ${response.status} ${response.statusText}`);
+                  dispatch({ type: "REMOVE_IMAGE" });
+               }
+
+               dispatch({ type: "STOP_UPLOADING" });
+            })
+            .catch(e => {
+               console.error(e.stack);
+               dispatch({ type: "CANCEL_UPLOADING" });
+            });
+
+         return function cancel(cb) {
+            cancelled = true;
+         }
+      }
+
+      const store = createStore(reducer, applyMiddleware(thunkMiddleware));
+
+      setupDragging(store.dispatch, onDropEvent);
+
+      store.subscribe(() => renderAll(store.getState()));
+      renderAll(store.getState());
+
+      </script>
+   </body>
+</html>
