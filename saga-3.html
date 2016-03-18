@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+   <head>
+      <title>Tricky Images with Saga</title>
+      <link rel="stylesheet" type="text/css" href="src/style.css">
+      <script src="https://npmcdn.com/redux@3.3.1/dist/redux.min.js"></script>
+      <script src="https://npmcdn.com/redux-saga@0.9.1/dist/redux-saga.min.js"></script>
+   </head>
+   <body>
+      <div id="image" class="row imageContainer isEmpty"></div>
+      <div id="uploadingMessage" class="row idHidden">
+         <span class="spinner isSpinning"></span>
+         <span class="spinnerText">Uploading</span>
+      </div>
+      <script src="src/mock-server.js"></script>
+      <script src="src/shared.js"></script>
+      <script>
+
+      function onDropEvent(ev) {
+         ev.preventDefault();
+         store.dispatch({ type: "DROP_IMAGE", file: ev.dataTransfer.files[0] })
+      }
+
+      function* uploadSaga() {
+         yield* takeLatest("DROP_IMAGE", showPlaceholderAndUploadImage);
+      }
+
+      function* showPlaceholderAndUploadImage(action) {
+         let showPlaceholderTask = null;
+
+         try {
+            yield put({ type: "START_UPLOADING" });
+
+            showPlaceholderTask = yield fork(showPlaceholder, action.file);
+
+            const body = new FormData();
+            body.append("file", action.file);
+            const response = yield call(fetch, "/images", { method: "POST", body });
+
+            yield cancel(showPlaceholderTask);
+
+            if (response.status === 201) {
+               const url = response.headers.get("Location");
+               yield put({ type: "SET_IMAGE", url });
+            }
+            else {
+               console.error(`Error: ${response.status} ${response.statusText}`);
+               yield put({ type: "REMOVE_IMAGE" });
+            }
+
+            yield put({ type: "STOP_UPLOADING" });
+         }
+         catch (e) {
+            if (!isCancelError(e))
+               console.error(e.stack);
+            yield cancel(showPlaceholderTask);
+            yield put({ type: "CANCEL_UPLOADING" });
+         }
+      }
+
+      function* showPlaceholder(file) {
+         try {
+            yield put({ type: "REMOVE_IMAGE" });
+            const dataUrl = yield call(readAsDataURL, file);
+            yield put({ type: "SET_IMAGE", url: dataUrl });
+         }
+         catch (e) {
+            if (!isCancelError)
+               console.log(e.stack);
+         }
+      }
+
+      const store = createStore(reducer, applyMiddleware(createSagaMiddleware(uploadSaga)));
+
+      setupDragging(store.dispatch, onDropEvent);
+
+      store.subscribe(() => renderAll(store.getState()));
+      renderAll(store.getState());
+
+      </script>
+   </body>
+</html>

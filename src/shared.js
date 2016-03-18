@@ -8,6 +8,8 @@ const createSagaMiddleware = typeof ReduxSaga !== "undefined" && ReduxSaga.defau
 const isCancelError = typeof ReduxSaga !== "undefined" && ReduxSaga.isCancelError;
 const put = typeof ReduxSaga !== "undefined" && ReduxSaga.effects.put;
 const call = typeof ReduxSaga !== "undefined" && ReduxSaga.effects.call;
+const cancel = typeof ReduxSaga !== "undefined" && ReduxSaga.effects.cancel;
+const fork = typeof ReduxSaga !== "undefined" && ReduxSaga.effects.fork;
 
 function readAsDataURL(file) {
    return new Promise((resolve, reject) => {
