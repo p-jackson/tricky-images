@@ -6,10 +6,12 @@ handling asynchronicity in a Redux app.
 
 The two ways of handling asynchronicity being compared are:
 
-* **redux-thunk** which is lightweight (the library is < 10 lines) and uses
-  simple functions as the unit of abstraction.
-* **redux-saga** which uses new language features and has more to learn up
-  front, but seems to handle complex examples more gracefuly.
+* [**redux-thunk**](https://github.com/gaearon/redux-thunk) which is lightweight
+  (the library is < 10 lines) and uses simple functions as the unit of
+  abstraction.
+* [**redux-saga**](http://yelouafi.github.io/redux-saga/) which uses new
+  language features and has more to learn up front, but seems to handle complex
+  examples more gracefuly.
 
 ### Example 1
 
