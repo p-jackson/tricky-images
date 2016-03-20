@@ -13,6 +13,8 @@ The two ways of handling asynchronicity being compared are:
   language features and has more to learn up front, but seems to handle complex
   examples more gracefuly.
 
+> **Uses new browser features, only tested in latest Chrome and Firefox**
+
 ### Example 1
 
 Drag an image to start uploading. The being uploaded will immediately show and
