@@ -81,7 +81,7 @@ function reducer(state, action) {
 }
 
 // This is a copy of the redux-thunk middleware (@2.0.1)
-// It's not available on npmcdn so just pasted it here's since it's tiny
+// It's not available on unpkg so just pasted it here's since it's tiny
 function thunkMiddleware({ dispatch, getState }) {
   return next => action => {
     if (typeof action === 'function') {
